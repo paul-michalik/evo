@@ -2,7 +2,7 @@
 
 ***Python package for the evaluation of odometry and SLAM***
 
-This packages provides executables and a small library for handling and evaluating and the trajectory output of odometry and SLAM algorithms.
+This packages provides executables and a small library for handling and evaluating and the trajectory output of odometry and SLAM algorithms. If you use this package for your research, please "cite" it as a footnote with the link to this repository: `github.com/MichaelGrupp/evo`.
 
 Supported trajectory formats:
 
@@ -105,7 +105,7 @@ There are some example trajectories in the source folder in `evo/test/data`.
 
 2. ***Run a metric on trajectories***
 
-  For example, here we calculate the absolute pose error for two trajectories from ORB-SLAM and S-PTAM using `evo_ape` and plot and save the individual results to .zip files:
+  For example, here we calculate the absolute pose error for two trajectories from ORB-SLAM and S-PTAM using `evo_ape` (`KITTI_00_gt.txt` is the reference (ground truth)) and plot and save the individual results to .zip files for `evo_res`:
 
   *First trajectory (ORB Stereo):*
 
