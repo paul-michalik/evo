@@ -1,0 +1,14 @@
+name: evo
+channels:
+    - conda-forge
+dependencies:
+    - numpy
+    - matplotlib
+    - scipy
+    - pandas
+    - seaborn
+    - natsort
+    - argcomplete
+    - colorama
+    - pygments
+    - enum34
