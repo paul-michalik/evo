@@ -6,8 +6,22 @@ import os
 import sys
 import shutil
 import subprocess as sp
-from pwd import getpwnam
 
+# Conditional definition of run_as_caller. "pwd" is not available when run natively on Windows. 
+try:
+    from pwd import getpwnam
+
+    def run_as_caller():
+        caller = os.environ["SUDO_USER"] if "SUDO_USER" in os.environ else os.environ["USER"]
+        uid = getpwnam(caller).pw_uid
+        gid = getpwnam(caller).pw_gid
+        os.setgid(gid)
+        os.setuid(uid)
+
+except ImportError:
+
+    def run_as_caller():
+        return
 
 # monkey patch because setuptools entry_points are slow as fuck
 # https://github.com/ninjaaron/fast-entry_points
@@ -19,15 +33,6 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 
 def python_below_34():
     return sys.version_info[0] < 3 or sys.version_info[1] < 4
-
-
-def run_as_caller():
-    caller = os.environ["SUDO_USER"] if "SUDO_USER" in os.environ else os.environ["USER"]
-    uid = getpwnam(caller).pw_uid
-    gid = getpwnam(caller).pw_gid
-    os.setgid(gid)
-    os.setuid(uid)
-
 
 def _post_install(install_lib_dir):
     from evo.tools.compat import which
