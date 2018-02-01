@@ -108,3 +108,7 @@ venv.bak/
 
 # VS Code
 .vscode/
+/.vs/evo/v15/.suo
+/.vs/ProjectSettings.json
+/.vs/slnx.sqlite
+/.vs/VSWorkspaceState.json

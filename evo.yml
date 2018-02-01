@@ -2,7 +2,7 @@ name: evo
 channels:
     - conda-forge
 dependencies:
-    - python==3.3
+    - python>=3.3
     - numpy
     - matplotlib
     - scipy

@@ -24,7 +24,22 @@ See [here](https://github.com/MichaelGrupp/evo/wiki/Formats) for more infos abou
 
 ---
 
+## Instalation in Anaconda environment
+
+We recommend to prepare a **conda** environment for the installation:
+
+```
+conda env create -f evo.yml
+```
+
+```
+activate evo
+```
+
+Starting from here proceed as described in next paragraph.
+
 ## Installation
+
 
 **Python 3.4+** and **Python 2.7** are both supported. If you want to use the ROS bagfile interface, first check which Python version is used by your ROS installation and install accordingly.
 You might also want to use a [virtual environment](doc/install_in_virtualenv.md).
