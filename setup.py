@@ -44,7 +44,10 @@ def _post_install(install_lib_dir):
     except sp.CalledProcessError as e:
         print("error:", e.output, file=sys.stderr)
     # IPython profile
-    user = os.environ["SUDO_USER"] if "SUDO_USER" in os.environ else os.environ["USER"]
+    if os.getenv('SUDO_USER'):
+        user = os.getenv("SUDO_USER")
+    else:
+        user = os.getenv("USER")
     home_dir = os.path.expanduser("~{}".format(user))
     ipython_dir = os.path.join(home_dir, ".ipython")
     os.environ["IPYTHONDIR"] = ipython_dir
