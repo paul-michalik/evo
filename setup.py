@@ -44,11 +44,8 @@ def _post_install(install_lib_dir):
     except sp.CalledProcessError as e:
         print("error:", e.output, file=sys.stderr)
     # IPython profile
-    if os.getenv('SUDO_USER'):
-        user = os.getenv("SUDO_USER")
-    else:
-        user = os.getenv("USER")
-    home_dir = os.path.expanduser("~{}".format(user))
+    user = os.getenv("SUDO_USER")
+    home_dir = os.path.expanduser("~{}".format(user)) if user else os.path.expanduser("~")
     ipython_dir = os.path.join(home_dir, ".ipython")
     os.environ["IPYTHONDIR"] = ipython_dir
     print("installing evo IPython profile for user", user)
