@@ -19,6 +19,7 @@ def parser():
     exp_parser.add_argument("-p", "--plot", help="show plot window", action="store_true")
     exp_parser.add_argument("--plot_mode", help="the axes for  plot projection",
                              default=None, choices=["xy", "yx", "xz", "zx", "yz", "xyz"])
+    exp_parser.add_argument("-s", "--scale", help="scale the trajectories", action="store_true")
     return exp_parser
 
 def find_scale_factor(axtraj_1, axtraj_2):
@@ -112,26 +113,35 @@ def run(args):
     read_kitti_traj = {}
     ref_traj_limits = None
 
-    if args.tum:
+    if args.tum and args.scale:
         for traj_file in args.tum:
             traj = file_interface.read_tum_trajectory_file(traj_file)
             (x_lim,y_lim,z_lim) = find_min_max(traj)
             traj_limits.append((traj_file,(x_lim,y_lim,z_lim)))
             read_tum_traj[traj_file] = traj
+    elif args.tum and not args.scale:
+        for traj_file in args.tum:
+            trajectories.append((traj_file, file_interface.read_tum_trajectory_file(traj_file)))
 
-    if args.kitti:
+    if args.kitti and args.scale:
         for pose_file in args.kitti:
             traj = file_interface.read_kitti_poses_file(pose_file)
             (x_lim,y_lim,z_lim) = find_min_max(traj)
             traj_limits.append((pose_file,(x_lim,y_lim,z_lim)))
             read_kitti_traj[pose_file] = traj
-
-    if args.ref:
+    elif args.kitti and not args.scale:
+        for pose_file in args.kitti:
+            trajectories.append((pose_file, file_interface.read_kitti_poses_file(pose_file)))    
+    
+    if args.ref and args.scale:
         ref_traj = file_interface.read_kitti_poses_file(args.ref)
         (x_lim,y_lim,z_lim) = find_min_max(ref_traj)
         ref_traj_limits = (args.ref,(x_lim,y_lim,z_lim)) 
+    elif args.ref and not args.scale:
+        ref_traj = file_interface.read_kitti_poses_file(args.ref)
 
-    trajectories = scale(read_tum_traj,read_kitti_traj,traj_limits,ref_traj_limits)
+    if args.scale:
+        trajectories = scale(read_tum_traj,read_kitti_traj,traj_limits,ref_traj_limits)
 
     if args.plot:
         from evo.tools.plot import PlotMode
@@ -143,6 +153,7 @@ def run(args):
         import copy
         plot_collection = plot.PlotCollection("evo_traj - trajectory plot")
         fig_xyz, axarr_xyz = plt.subplots(3, sharex="col", figsize=tuple(SETTINGS.plot_figsize))
+        fig_rpy, axarr_rpy = plt.subplots(3, sharex="col", figsize=tuple(SETTINGS.plot_figsize))
         fig_traj = plt.figure(figsize=tuple(SETTINGS.plot_figsize))
         ax_traj = plot.prepare_axis(fig_traj, plot_mode)
 
@@ -158,17 +169,20 @@ def run(args):
             plot.traj(ax_traj, plot_mode, traj, '-', color, short_traj_name)
             start_time = None
             plot.traj_xyz(axarr_xyz, traj, '-', color, short_traj_name, start_timestamp=start_time)
-
+            plot.traj_rpy(axarr_rpy, traj, '-', color, short_traj_name, start_timestamp=start_time)
         if args.ref:
             short_traj_name = os.path.splitext(os.path.basename(args.ref))[0]
             if SETTINGS.plot_usetex:
                 short_traj_name = short_traj_name.replace("_", "\\_")
             plot.traj(ax_traj, plot_mode, ref_traj, '--', 'grey', short_traj_name)
             plot.traj_xyz(axarr_xyz, ref_traj, '--', 'grey', short_traj_name)
+            plot.traj_rpy(axarr_rpy, ref_traj, '--', 'grey', short_traj_name,
+                          alpha=0 if SETTINGS.plot_hideref else 1)
 
         plt.tight_layout()
         plot_collection.add_figure("trajectories", fig_traj)
         plot_collection.add_figure("xyz_view", fig_xyz)
+        plot_collection.add_figure("rpy_view", fig_rpy)
         if args.plot:
             plot_collection.show()
 
